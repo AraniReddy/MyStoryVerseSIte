@@ -24,8 +24,6 @@ body {
   font-size: 14px;
   background: #111;
   color: #ccc;
-
-  /* Ensure center alignment */
   display: flex;
   flex-direction: column;
   align-items: center;
