@@ -24,18 +24,22 @@ body {
   font-size: 14px;
   background: #111;
   color: #ccc;
+
+  /* Ensure center alignment */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
+
 .footer-links {
   margin-bottom: 10px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-.footer-links a {
-  margin: 0 10px;
-  color: #aaa;
-  text-decoration: none;
-}
-.footer-links a:hover {
-  text-decoration: underline;
-}
+
 .legal-page {
   max-width: 800px;
   margin: 50px auto;
