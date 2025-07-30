@@ -214,6 +214,55 @@ body {
   overflow: hidden;
   position: relative;
 }
+.teaser {
+  padding: 5rem 5%;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  animation: fadeInUp 1s ease-out;
+}
+
+.teaser h2 {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  animation: fadeInUp 1s ease-out;
+}
+
+.teaser-subtitle {
+  color: rgba(255,255,255,0.9);
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+.teaser-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.teaser-card {
+  background: rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: fadeInUp 1s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.teaser-card:hover {
+  transform: translateY(-10px);
+}
+
+.teaser-card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite alternate;
+}
 
 .app-demo-video {
   width: 100%;
