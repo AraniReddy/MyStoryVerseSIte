@@ -232,13 +232,20 @@ body {
     border-radius: 20px;
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.app-demo-video {
+.youtube-video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
     border-radius: 15px;
+    border: none;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .app-demo {
