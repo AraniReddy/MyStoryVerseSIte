@@ -18,6 +18,31 @@ body {
     padding: 0 5%;
     position: relative;
 }
+.footer {
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  background: #111;
+  color: #ccc;
+}
+.footer-links {
+  margin-bottom: 10px;
+}
+.footer-links a {
+  margin: 0 10px;
+  color: #aaa;
+  text-decoration: none;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+.legal-page {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+  font-family: sans-serif;
+  line-height: 1.6;
+}
 
 .stars {
     position: absolute;
