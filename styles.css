@@ -49,6 +49,7 @@ body {
 .nav-menu {
   display: flex;
   gap: 30px;
+  align-items: center;
 }
 
 .nav-menu a {
@@ -76,6 +77,103 @@ body {
 
 .nav-menu a:hover::after {
   width: 100%;
+}
+
+/* Admin Dropdown */
+.admin-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-btn {
+  background: none;
+  border: none;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+.admin-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  min-width: 120px;
+  z-index: 1000;
+}
+
+.admin-menu a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-menu a:hover {
+  background: #f5f5f5;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.modal-content button {
+  padding: 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .hero {
@@ -409,7 +507,7 @@ section > * {
   font-size: 1.5rem;
 }
 
-/* Admin Dashboard Styles */
+/* Admin Dashboard */
 .admin-dashboard { 
   background: #f8f9fa; 
   padding: 40px 20px; 
@@ -523,104 +621,7 @@ section > * {
   background: #c82333;
 }
 
-/* Admin Dropdown Styles */
-.admin-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.admin-btn {
-  background: none;
-  border: none;
-  color: #333;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 5px;
-  font-size: 1rem;
-}
-
-.admin-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  min-width: 120px;
-  z-index: 1000;
-}
-
-.admin-menu a {
-  display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  border-bottom: 1px solid #eee;
-}
-
-.admin-menu a:hover {
-  background: #f5f5f5;
-}
-
-/* Modal Styles */
-.modal {
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
-  max-width: 90%;
-  position: relative;
-}
-
-.close {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.modal-content h2 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.modal-content form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.modal-content input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.modal-content button {
-  padding: 12px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Task Results Styles */
+/* Task Results */
 .task-result-card {
   background: white;
   border: 1px solid #ddd;
@@ -758,20 +759,7 @@ section > * {
     font-size: 1.5rem;
   }
   
-  .admin-container {
-    padding: 0 10px;
-  }
-  
-  .admin-tab-content form {
-    max-width: 100%;
-  }
-  
-  .admin-tabs {
-    flex-wrap: wrap;
-  }
-  
-  .admin-tab-btn {
-    font-size: 0.9rem;
-    padding: 8px 15px;
+  .task-stats {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
