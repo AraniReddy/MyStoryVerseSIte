@@ -1,0 +1,41 @@
+<!-- Add this section to your existing website -->
+<div id="adminDashboard" style="display: none;">
+    <div class="admin-container">
+        <h2>Admin Dashboard</h2>
+        
+        <div class="admin-tabs">
+            <button onclick="showAdminTab('transactions')">Transactions</button>
+            <button onclick="showAdminTab('tasks')">Add Task</button>
+            <button onclick="showAdminTab('promotions')">Add Promotion</button>
+        </div>
+
+        <div id="admin-transactions" class="admin-tab">
+            <table id="adminTransactionsTable">
+                <thead>
+                    <tr><th>User</th><th>Task</th><th>Amount</th><th>Action</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="admin-tasks" class="admin-tab">
+            <form id="adminTaskForm">
+                <input type="text" placeholder="Brand Name" required>
+                <textarea placeholder="Question" required></textarea>
+                <input type="number" placeholder="Reward Amount" required>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <div id="admin-promotions" class="admin-tab">
+            <form id="adminPromoForm">
+                <input type="text" placeholder="Title" required>
+                <textarea placeholder="Description" required></textarea>
+                <input type="url" placeholder="Video URL" required>
+                <button type="submit">Add Promotion</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="admin-functions.js"></script>

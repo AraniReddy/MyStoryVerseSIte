@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecretShop Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SecretShop Admin Dashboard</h1>
+            <div class="user-info">
+                <span id="adminName">Admin</span>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="showTab('transactions')">Pending Transactions</button>
+            <button class="tab-btn" onclick="showTab('tasks')">Add Task</button>
+            <button class="tab-btn" onclick="showTab('promotions')">Add Promotion</button>
+        </nav>
+
+        <!-- Transactions Tab -->
+        <div id="transactions" class="tab-content active">
+            <h2>Pending Transactions</h2>
+            <div class="table-container">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Task</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Task Tab -->
+        <div id="tasks" class="tab-content">
+            <h2>Add New Task</h2>
+            <form id="taskForm">
+                <input type="text" id="brandName" placeholder="Brand Name" required>
+                <textarea id="question" placeholder="Question" required></textarea>
+                <input type="number" id="rewardAmount" placeholder="Reward Amount" required>
+                <input type="number" id="userTarget" placeholder="User Target" required>
+                <input type="url" id="imageUrl" placeholder="Image URL" required>
+                <label>
+                    <input type="checkbox" id="secureMode"> Secure Mode
+                </label>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <!-- Add Promotion Tab -->
+        <div id="promotions" class="tab-content">
+            <h2>Add New Promotion</h2>
+            <form id="promotionForm">
+                <input type="text" id="promoTitle" placeholder="Promotion Title" required>
+                <textarea id="promoDescription" placeholder="Description" required></textarea>
+                <input type="url" id="videoUrl" placeholder="Video URL" required>
+                <input type="number" id="promoReward" placeholder="Reward Amount" required>
+                <button type="submit">Add Promotion</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
