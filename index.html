@@ -18,7 +18,13 @@
         <a href="#about">About</a>
         <a href="#how-it-works">How it Works</a>
         <a href="#contact">Contact</a>
-        <a href="#" onclick="toggleAdminDashboard()">Admin</a>
+        <div class="admin-dropdown">
+          <button class="admin-btn" onclick="toggleAdminMenu()">Admin ▼</button>
+          <div id="adminMenu" class="admin-menu" style="display: none;">
+            <a href="#" onclick="toggleLogin()">Login</a>
+            <a href="#" onclick="toggleAdminDashboard()">Dashboard</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -154,6 +160,19 @@
     </a>
   </section>
 
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="toggleLogin()">&times;</span>
+      <h2>Admin Login</h2>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Admin Dashboard Section -->
   <section id="adminDashboard" class="admin-dashboard" style="display: none;">
     <div class="admin-container">
@@ -161,6 +180,7 @@
       
       <div class="admin-tabs">
         <button class="admin-tab-btn active" onclick="showAdminTab('transactions')">Pending Transactions</button>
+        <button class="admin-tab-btn" onclick="showAdminTab('results')">Task Results</button>
         <button class="admin-tab-btn" onclick="showAdminTab('tasks')">Add Task</button>
         <button class="admin-tab-btn" onclick="showAdminTab('promotions')">Add Promotion</button>
       </div>
@@ -172,6 +192,11 @@
           </thead>
           <tbody></tbody>
         </table>
+      </div>
+
+      <div id="admin-results" class="admin-tab-content">
+        <h3>Task Performance Dashboard</h3>
+        <div id="taskResultsContainer"></div>
       </div>
 
       <div id="admin-tasks" class="admin-tab-content">
@@ -214,11 +239,56 @@
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    function toggleAdminMenu() {
+      const menu = document.getElementById('adminMenu');
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleLogin() {
+      const modal = document.getElementById('loginModal');
+      modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+      document.getElementById('adminMenu').style.display = 'none';
+    }
+
     function toggleAdminDashboard() {
       const dashboard = document.getElementById('adminDashboard');
       dashboard.style.display = dashboard.style.display === 'none' ? 'block' : 'none';
+      document.getElementById('adminMenu').style.display = 'none';
       if (dashboard.style.display === 'block') loadAdminTransactions();
     }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+        
+        if (error) throw error;
+        
+        // Check if user is admin
+        const { data: profile } = await supabaseClient
+          .from('user_profiles')
+          .select('user_type')
+          .eq('user_id', data.user.id)
+          .single();
+        
+        if (profile?.user_type === 'Admin') {
+          alert('Login successful!');
+          toggleLogin();
+          toggleAdminDashboard();
+        } else {
+          alert('Access denied. Admin privileges required.');
+          await supabaseClient.auth.signOut();
+        }
+      } catch (error) {
+        alert('Login failed: ' + error.message);
+      }
+    });
 
     function showAdminTab(tab) {
       document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
@@ -226,39 +296,75 @@
       document.getElementById(`admin-${tab}`).classList.add('active');
       event.target.classList.add('active');
       if (tab === 'transactions') loadAdminTransactions();
+      if (tab === 'results') loadTaskResults();
     }
 
     async function loadAdminTransactions() {
-      const { data } = await supabaseClient
-        .from('task_responses')
-        .select('*, user_profiles(name), brand_tasks(brand_name, reward_amount)')
-        .eq('reward_status', 'pending');
-      
-      const tbody = document.querySelector('#adminTransactionsTable tbody');
-      tbody.innerHTML = data?.map(t => `
-        <tr>
-          <td>${t.user_profiles?.name || 'Unknown'}</td>
-          <td>${t.brand_tasks?.brand_name || 'Unknown'}</td>
-          <td>₹${t.brand_tasks?.reward_amount || 0}</td>
-          <td>${new Date(t.created_at).toLocaleDateString()}</td>
-          <td>
-            <button class="approve-btn" onclick="approveTransaction('${t.id}')">Approve</button>
-            <button class="reject-btn" onclick="rejectTransaction('${t.id}')">Reject</button>
-          </td>
-        </tr>
-      `).join('') || '<tr><td colspan="5">No pending transactions</td></tr>';
+      try {
+        const { data, error } = await supabaseClient
+          .from('task_responses')
+          .select(`
+            id,
+            created_at,
+            user_profiles!inner(name),
+            brand_tasks!inner(brand_name, reward_amount)
+          `)
+          .eq('reward_status', 'pending');
+        
+        if (error) throw error;
+        
+        const tbody = document.querySelector('#adminTransactionsTable tbody');
+        tbody.innerHTML = data?.length ? data.map(t => `
+          <tr>
+            <td>${t.user_profiles?.name || 'Unknown'}</td>
+            <td>${t.brand_tasks?.brand_name || 'Unknown'}</td>
+            <td>₹${t.brand_tasks?.reward_amount || 0}</td>
+            <td>${new Date(t.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="approve-btn" onclick="approveTransaction('${t.id}')">Approve</button>
+              <button class="reject-btn" onclick="rejectTransaction('${t.id}')">Reject</button>
+            </td>
+          </tr>
+        `).join('') : '<tr><td colspan="5">No pending transactions</td></tr>';
+      } catch (error) {
+        console.error('Error loading transactions:', error);
+        document.querySelector('#adminTransactionsTable tbody').innerHTML = 
+          '<tr><td colspan="5">Error loading transactions</td></tr>';
+      }
     }
 
     async function approveTransaction(id) {
-      await supabaseClient.from('task_responses').update({reward_status: 'paid'}).eq('id', id);
-      alert('Transaction approved!');
-      loadAdminTransactions();
+      try {
+        const { error } = await supabaseClient
+          .from('task_responses')
+          .update({ reward_status: 'paid' })
+          .eq('id', id);
+        
+        if (error) throw error;
+        
+        alert('Transaction approved! User wallet will be updated.');
+        loadAdminTransactions();
+      } catch (error) {
+        alert('Error approving transaction: ' + error.message);
+      }
     }
 
     async function rejectTransaction(id) {
-      await supabaseClient.from('task_responses').delete().eq('id', id);
-      alert('Transaction rejected!');
-      loadAdminTransactions();
+      if (!confirm('Are you sure you want to reject this transaction?')) return;
+      
+      try {
+        const { error } = await supabaseClient
+          .from('task_responses')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+        
+        alert('Transaction rejected and removed.');
+        loadAdminTransactions();
+      } catch (error) {
+        alert('Error rejecting transaction: ' + error.message);
+      }
     }
 
     document.getElementById('adminTaskForm').addEventListener('submit', async (e) => {
@@ -288,6 +394,76 @@
       alert('Promotion added!');
       e.target.reset();
     });
+
+    async function loadTaskResults() {
+      try {
+        const { data: tasks, error } = await supabaseClient
+          .from('brand_tasks')
+          .select('id, brand_name, question, user_target, reward_amount, created_at');
+        
+        if (error) throw error;
+        
+        const container = document.getElementById('taskResultsContainer');
+        let html = '';
+        
+        for (const task of tasks) {
+          // Get response count
+          const { count: responseCount } = await supabaseClient
+            .from('task_responses')
+            .select('*', { count: 'exact' })
+            .eq('task_id', task.id);
+          
+          // Get like/dislike breakdown
+          const { data: responses } = await supabaseClient
+            .from('task_responses')
+            .select('liked')
+            .eq('task_id', task.id);
+          
+          const likes = responses?.filter(r => r.liked === true).length || 0;
+          const dislikes = responses?.filter(r => r.liked === false).length || 0;
+          
+          const progress = Math.round((responseCount / task.user_target) * 100);
+          
+          html += `
+            <div class="task-result-card">
+              <h4>${task.brand_name}</h4>
+              <p><strong>Question:</strong> ${task.question}</p>
+              <div class="task-stats">
+                <div class="stat">
+                  <span class="stat-number">${responseCount}</span>
+                  <span class="stat-label">Responses</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">${task.user_target}</span>
+                  <span class="stat-label">Target</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">${progress}%</span>
+                  <span class="stat-label">Complete</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">${likes}</span>
+                  <span class="stat-label">Likes</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-number">${dislikes}</span>
+                  <span class="stat-label">Dislikes</span>
+                </div>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+              </div>
+            </div>
+          `;
+        }
+        
+        container.innerHTML = html || '<p>No tasks found</p>';
+      } catch (error) {
+        console.error('Error loading task results:', error);
+        document.getElementById('taskResultsContainer').innerHTML = 
+          '<p>Error loading task results</p>';
+      }
+    }
 
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
