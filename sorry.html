@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorry Bank - Apology</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .apology-card {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            text-align: left;
+        }
+        
+        .apology-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .apology-info {
+            flex: 1;
+        }
+        
+        .username {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .date {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .apology-text {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .apology-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        .download-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .download-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .download-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            background: #60a5fa;
+            color: #0f172a;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .download-btn:hover {
+            background: #3b82f6;
+        }
+        
+        .error {
+            color: #fca5a5;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            color: #94a3b8;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🕊️</div>
+        <h1 class="title">Sorry Bank</h1>
+        <p class="tagline">Say it once, mean it forever.</p>
+        
+        <div id="content">
+            <div class="loading">Loading apology...</div>
+        </div>
+        
+        <div class="download-section">
+            <h2 class="download-title">Get the Sorry Bank App</h2>
+            <p class="download-desc">Join our global empathy network and share your own apologies</p>
+            <div class="download-buttons">
+                <a href="#" class="download-btn">📱 Download App</a>
+                <a href="https://mystoryverse.online" class="download-btn">🌐 Visit Website</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Replace with your actual Supabase credentials
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function loadApology() {
+            const contentDiv = document.getElementById('content');
+            
+            try {
+                // Extract apology ID from URL
+                const pathParts = window.location.pathname.split('/');
+                const apologyId = pathParts[pathParts.length - 1];
+                
+                if (!apologyId || apologyId === 'sorry') {
+                    contentDiv.innerHTML = '<div class="error">No apology ID provided</div>';
+                    return;
+                }
+                
+                // Fetch apology from Supabase
+                const { data: apology, error } = await supabase
+                    .from('apologies')
+                    .select(`
+                        *,
+                        users!sender_id(username, avatar_url)
+                    `)
+                    .eq('id', apologyId)
+                    .single();
+                
+                if (error || !apology) {
+                    contentDiv.innerHTML = '<div class="error">Apology not found or no longer available</div>';
+                    return;
+                }
+                
+                // Check if apology is private and not approved
+                if (apology.mode === 'deliver' && apology.status !== 'approved') {
+                    contentDiv.innerHTML = '<div class="error">This apology is not yet available</div>';
+                    return;
+                }
+                
+                // Fetch reaction counts
+                const { data: reactions } = await supabase
+                    .from('reactions')
+                    .select('type')
+                    .eq('apology_id', apologyId);
+                
+                const forgiveCount = reactions?.filter(r => r.type === 'forgive').length || 0;
+                const nottoforgiveCount = reactions?.filter(r => r.type === 'nottoforgive').length || 0;
+                
+                // Fetch comment count
+                const { data: comments } = await supabase
+                    .from('apology_comments')
+                    .select('id')
+                    .eq('apology_id', apologyId);
+                
+                const commentCount = comments?.length || 0;
+                
+                // Display apology
+                const imageHtml = apology.image_url ? 
+                    `<img src="${SUPABASE_URL}/storage/v1/object/public/photos/${apology.image_url}" alt="Apology image" class="apology-image">` : '';
+                
+                contentDiv.innerHTML = `
+                    <div class="apology-card">
+                        <div class="apology-header">
+                            <div class="avatar">🕊️</div>
+                            <div class="apology-info">
+                                <div class="username">@${apology.users?.username || 'anonymous'}</div>
+                                <div class="date">${new Date(apology.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <div class="tag">#${apology.tag}</div>
+                        </div>
+                        
+                        <div class="apology-text">${apology.text}</div>
+                        ${imageHtml}
+                        
+                        <div class="stats">
+                            <div class="stat">
+                                <span>🤝</span>
+                                <span>${forgiveCount}</span>
+                            </div>
+                            <div class="stat">
+                                <span>🙅</span>
+                                <span>${nottoforgiveCount}</span>
+                            </div>
+                            <div class="stat">
+                                <span>💬</span>
+                                <span>${commentCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading apology:', error);
+                contentDiv.innerHTML = '<div class="error">Failed to load apology</div>';
+            }
+        }
+        
+        // Load apology when page loads
+        document.addEventListener('DOMContentLoaded', loadApology);
+    </script>
+</body>
+</html>
