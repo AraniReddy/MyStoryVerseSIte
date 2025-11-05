@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorry Bank - Apology</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -109,14 +108,6 @@
             margin-bottom: 16px;
         }
         
-        .apology-image {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
         .stats {
             display: flex;
             gap: 20px;
@@ -206,12 +197,6 @@
     </div>
 
     <script>
-        // Replace with your actual Supabase credentials
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
         async function loadApology() {
             const contentDiv = document.getElementById('content');
             
@@ -225,48 +210,18 @@
                     return;
                 }
                 
-                // Fetch apology from Supabase
-                const { data: apology, error } = await supabase
-                    .from('apologies')
-                    .select(`
-                        *,
-                        users!sender_id(username, avatar_url)
-                    `)
-                    .eq('id', apologyId)
-                    .single();
+                // Fetch from your secure API endpoint
+                const response = await fetch(`https://mystoryverse.online/api/apology?id=${apologyId}`);
+                const data = await response.json();
                 
-                if (error || !apology) {
-                    contentDiv.innerHTML = '<div class="error">Apology not found or no longer available</div>';
+                if (!response.ok || data.error) {
+                    contentDiv.innerHTML = `<div class="error">${data.error || 'Apology not found'}</div>`;
                     return;
                 }
                 
-                // Check if apology is private and not approved
-                if (apology.mode === 'deliver' && apology.status !== 'approved') {
-                    contentDiv.innerHTML = '<div class="error">This apology is not yet available</div>';
-                    return;
-                }
-                
-                // Fetch reaction counts
-                const { data: reactions } = await supabase
-                    .from('reactions')
-                    .select('type')
-                    .eq('apology_id', apologyId);
-                
-                const forgiveCount = reactions?.filter(r => r.type === 'forgive').length || 0;
-                const nottoforgiveCount = reactions?.filter(r => r.type === 'nottoforgive').length || 0;
-                
-                // Fetch comment count
-                const { data: comments } = await supabase
-                    .from('apology_comments')
-                    .select('id')
-                    .eq('apology_id', apologyId);
-                
-                const commentCount = comments?.length || 0;
+                const apology = data.apology;
                 
                 // Display apology
-                const imageHtml = apology.image_url ? 
-                    `<img src="${SUPABASE_URL}/storage/v1/object/public/photos/${apology.image_url}" alt="Apology image" class="apology-image">` : '';
-                
                 contentDiv.innerHTML = `
                     <div class="apology-card">
                         <div class="apology-header">
@@ -279,20 +234,19 @@
                         </div>
                         
                         <div class="apology-text">${apology.text}</div>
-                        ${imageHtml}
                         
                         <div class="stats">
                             <div class="stat">
                                 <span>🤝</span>
-                                <span>${forgiveCount}</span>
+                                <span>${apology.forgiveCount}</span>
                             </div>
                             <div class="stat">
                                 <span>🙅</span>
-                                <span>${nottoforgiveCount}</span>
+                                <span>${apology.nottoforgiveCount}</span>
                             </div>
                             <div class="stat">
                                 <span>💬</span>
-                                <span>${commentCount}</span>
+                                <span>${apology.commentCount}</span>
                             </div>
                         </div>
                     </div>
@@ -304,7 +258,6 @@
             }
         }
         
-        // Load apology when page loads
         document.addEventListener('DOMContentLoaded', loadApology);
     </script>
 </body>
