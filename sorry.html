@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorry Bank - Apology</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -197,11 +198,16 @@
     </div>
 
     <script>
+        // Use your actual Supabase credentials here (this is safe for anon key)
+        const SUPABASE_URL = 'https://pcxsrvalchmobgwgefsv.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjeHNydmFsY2htb2Jnd2dlZnN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMTI2ODUsImV4cCI6MjA2ODY4ODY4NX0.Ac9mZXlKLaTKesvB5tSqpmqVfqxXVgynTIugnNN51qM';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         async function loadApology() {
             const contentDiv = document.getElementById('content');
             
             try {
-                // Extract apology ID from URL
                 const pathParts = window.location.pathname.split('/');
                 const apologyId = pathParts[pathParts.length - 1];
                 
@@ -210,18 +216,37 @@
                     return;
                 }
                 
-                // Fetch from your secure API endpoint
-                const response = await fetch(`https://mystoryverse.online/supabase/apology?id=${apologyId}`);
-                const data = await response.json();
+                const { data: apology, error } = await supabase
+                    .from('apologies')
+                    .select('*, users!sender_id(username, avatar_url)')
+                    .eq('id', apologyId)
+                    .single();
                 
-                if (!response.ok || data.error) {
-                    contentDiv.innerHTML = `<div class="error">${data.error || 'Apology not found'}</div>`;
+                if (error || !apology) {
+                    contentDiv.innerHTML = '<div class="error">Apology not found</div>';
                     return;
                 }
                 
-                const apology = data.apology;
+                if (apology.mode === 'deliver' && apology.status !== 'approved') {
+                    contentDiv.innerHTML = '<div class="error">This apology is not yet available</div>';
+                    return;
+                }
                 
-                // Display apology
+                const { data: reactions } = await supabase
+                    .from('reactions')
+                    .select('type')
+                    .eq('apology_id', apologyId);
+                
+                const forgiveCount = reactions?.filter(r => r.type === 'forgive').length || 0;
+                const nottoforgiveCount = reactions?.filter(r => r.type === 'nottoforgive').length || 0;
+                
+                const { data: comments } = await supabase
+                    .from('apology_comments')
+                    .select('id')
+                    .eq('apology_id', apologyId);
+                
+                const commentCount = comments?.length || 0;
+                
                 contentDiv.innerHTML = `
                     <div class="apology-card">
                         <div class="apology-header">
@@ -238,15 +263,15 @@
                         <div class="stats">
                             <div class="stat">
                                 <span>🤝</span>
-                                <span>${apology.forgiveCount}</span>
+                                <span>${forgiveCount}</span>
                             </div>
                             <div class="stat">
                                 <span>🙅</span>
-                                <span>${apology.nottoforgiveCount}</span>
+                                <span>${nottoforgiveCount}</span>
                             </div>
                             <div class="stat">
                                 <span>💬</span>
-                                <span>${apology.commentCount}</span>
+                                <span>${commentCount}</span>
                             </div>
                         </div>
                     </div>
