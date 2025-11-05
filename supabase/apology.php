@@ -18,9 +18,20 @@ if (!$apologyId) {
     exit;
 }
 
+// Load environment variables from .env file
+if (file_exists(__DIR__ . '/.env')) {
+    $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos($line, '=') !== false && strpos($line, '#') !== 0) {
+            list($key, $value) = explode('=', $line, 2);
+            $_ENV[trim($key)] = trim($value);
+        }
+    }
+}
+
 // Environment variables for Supabase
-$supabaseUrl = $_ENV['SUPABASE_URL'];
-$supabaseKey = $_ENV['SUPABASE_ANON_KEY'];
+$supabaseUrl = $_ENV['SUPABASE_URL'] ?? null;
+$supabaseKey = $_ENV['SUPABASE_ANON_KEY'] ?? null;
 
 if (!$supabaseUrl || !$supabaseKey) {
     http_response_code(500);
