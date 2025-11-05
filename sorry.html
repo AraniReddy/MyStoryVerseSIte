@@ -198,7 +198,6 @@
     </div>
 
     <script>
-        // Use your actual Supabase credentials here (this is safe for anon key)
         const SUPABASE_URL = 'https://pcxsrvalchmobgwgefsv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjeHNydmFsY2htb2Jnd2dlZnN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMTI2ODUsImV4cCI6MjA2ODY4ODY4NX0.Ac9mZXlKLaTKesvB5tSqpmqVfqxXVgynTIugnNN51qM';
         
@@ -224,11 +223,6 @@
                 
                 if (error || !apology) {
                     contentDiv.innerHTML = '<div class="error">Apology not found</div>';
-                    return;
-                }
-                
-                if (apology.mode === 'deliver' && apology.status !== 'approved') {
-                    contentDiv.innerHTML = '<div class="error">This apology is not yet available</div>';
                     return;
                 }
                 
